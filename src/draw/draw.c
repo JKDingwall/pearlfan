@@ -153,6 +153,6 @@ int pfan_draw_paragraph(char *text,
         return i;
     }
 
-    fprintf(stderr, "Error: the text is over the display limit of 8.\n\n");
+    fprintf(stderr, "Error: the text is over the display limit of %d.\n\n", PFAN_MAX_DISPLAY);
     return 0;
 }
