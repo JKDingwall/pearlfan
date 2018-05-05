@@ -25,7 +25,7 @@
 #define PFAN_PID              0x7160
 
 #define PFAN_MAX_W            160   //or 160?
-#define PFAN_MAX_H            11    //or 20?
+#define PFAN_MAX_H            11
 #define PFAN_MAX_DISPLAY      8     // or 20?
 
 #define MAX_PATH              1024
