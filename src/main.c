@@ -118,7 +118,7 @@ int main(int argc, char **argv)
     fprintf(stdout, "Device found.\n");
     fprintf(stdout, "Transfer started.\n");
 
-    int expected_transfer = 320 * img_nbr;
+    int expected_transfer = ((PFAN_MAX_W * sizeof(unsigned short)) + 8) * img_nbr;  // +8 for effects
     int bytes = pfan_send(usb_handle, img_nbr, effects, displays);
 
     ret = 0;

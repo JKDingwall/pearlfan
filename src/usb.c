@@ -65,6 +65,7 @@ static int pfan_usb_send(libusb_device_handle *dev, void *data)
     int l = 0;
 
     memset((void *)buf, 0, 8);
+    // what is this magic number?
     buf[7] = 0x2;
 
     fprintf(stderr, "USB transfer: %04x %04x %04x %04x\n",
@@ -78,6 +79,8 @@ static int pfan_usb_send(libusb_device_handle *dev, void *data)
         return bytes;
     }
 
+    // The libusb_interrupt_transfer() seems to be an ACK for the
+    // libusb_control_transfer() above as we discard any data received.
     int ret;
 
     if ((ret = libusb_interrupt_transfer(dev, 0x81, buf, 8, &l, 1000)) < 0) {
@@ -96,6 +99,8 @@ static uint64_t encode_effect(const char id, const unsigned char effect[3])
     opts |= (id << 8);
     opts |= (effect[PFAN_BEFORECLOSE] << 12);
 
+    return 0xAF0000022A034040;
+    // what is this magic 64-bit/8 byte number?
     return 0x00000055000010A0 | (opts << 16);
 }
 
@@ -109,6 +114,7 @@ int pfan_send(libusb_device_handle *dev_handle, int img_n,
     for (uint8_t i = 0; i < img_n; i++) {
         uint64_t effect = encode_effect(i, effects[i]);
 
+        // send the effects for this image
         ret = pfan_usb_send(dev_handle, &effect);
 
         if (ret < 0) {
@@ -119,7 +125,14 @@ int pfan_send(libusb_device_handle *dev_handle, int img_n,
 
         bytes += 8;
 
-        for (uint8_t j = 0; j < 39; ++j) {
+        // send the image (how do we send colour information?)
+        // 39 = 156 / 4 so sending 4 columns at a time, a column is encoded in
+        // 2 bytes ........ ........
+        for (uint8_t j = 0; j < (PFAN_MAX_W / 4); ++j) {
+            displays[i][(j * 4) + 0] = (unsigned short)0x2340;
+            displays[i][(j * 4) + 1] = (unsigned short)0x22a4;
+            displays[i][(j * 4) + 2] = (unsigned short)0xa422;
+            displays[i][(j * 4) + 3] = (unsigned short)0x93a4;
             ret = pfan_usb_send(dev_handle, &displays[i][j * 4]);
 
             if (ret < 0) {

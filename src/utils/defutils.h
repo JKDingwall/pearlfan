@@ -24,9 +24,9 @@
 #define PFAN_VID              0x0c45
 #define PFAN_PID              0x7160
 
-#define PFAN_MAX_W            160   //or 160?
-#define PFAN_MAX_H            11
-#define PFAN_MAX_DISPLAY      8     // or 20?
+#define PFAN_MAX_W            144   // display width in pixels
+#define PFAN_MAX_H            11    // display height in pixels
+#define PFAN_MAX_DISPLAY      20    // number of display entries
 
 #define MAX_PATH              1024
 

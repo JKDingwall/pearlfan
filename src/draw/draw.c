@@ -21,22 +21,22 @@
 #include "draw.h"
 #include "font.h"
 
-#define PFAN_LSPACE        1
+#define PFAN_LSPACE        1 // width of empty column(s) between letters
 #define PFAN_CHAR_SPACE    (PFAN_CHAR_W + PFAN_LSPACE)
 #define PFAN_MAX_CHAR      (PFAN_MAX_W / PFAN_CHAR_SPACE)
 
 static unsigned short led_mask[] = {
-    0xFFF7,/* [0]  LED10*/
-    0xFFFB,/* [1]  LED9 */
-    0xFFFD,/* [2]  LED8 */
-    0xFFFE,/* [3]  LED7 */
-    0x7FFF,/* [4]  LED6 */
-    0xBFFF,/* [5]  LED5 */
-    0xDFFF,/* [6]  LED4 */
-    0xEFFF,/* [7]  LED3 */
-    0xF7FF,/* [8]  LED2 */
-    0xFBFF,/* [9]  LED1 */
-    0xFCFF,/* [10] LED0 */
+    0xFFF7,/* [0]  LED10 1111 1111 1111 0111 */
+    0xFFFB,/* [1]  LED9  1111 1111 1111 1011 */
+    0xFFFD,/* [2]  LED8  1111 1111 1111 1101 */
+    0xFFFE,/* [3]  LED7  1111 1111 1111 1110 */
+    0x7FFF,/* [4]  LED6  0111 1111 1111 1111 */
+    0xBFFF,/* [5]  LED5  1011 1111 1111 1111 */
+    0xDFFF,/* [6]  LED4  1101 1111 1111 1111 */
+    0xEFFF,/* [7]  LED3  1110 1111 1111 1111 */
+    0xF7FF,/* [8]  LED2  1111 0111 1111 1111 */
+    0xFBFF,/* [9]  LED1  1111 1011 1111 1111 */
+    0xFCFF,/* [10] LED0  1111 1100 1111 1111 */ // is C correct or is the extra 0 ignored as it is out of range?
 };
 
 void pfan_draw_point(int xpos,
@@ -47,6 +47,8 @@ void pfan_draw_point(int xpos,
         return;
     }
 
+    // pack the image in to the array in reverse order
+    // 0 = led on, 1 = led off
     display[PFAN_MAX_W - 1 - xpos] &= led_mask[ypos];
 }
 
