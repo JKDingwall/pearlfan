@@ -19,6 +19,7 @@
 #include <string.h>
 #include <stdio.h>
 #include <stdint.h>
+#include <arpa/inet.h>
 
 #include "defutils.h"
 #include "usb.h"
@@ -57,7 +58,7 @@ void pfan_close(libusb_device_handle *dev_handle)
     libusb_exit(NULL);
 }
 
-static int send(libusb_device_handle *dev, void *data)
+static int pfan_usb_send(libusb_device_handle *dev, void *data)
 {
     uint8_t buf[8];
     int bytes = 0;
@@ -66,6 +67,11 @@ static int send(libusb_device_handle *dev, void *data)
     memset((void *)buf, 0, 8);
     buf[7] = 0x2;
 
+    fprintf(stderr, "USB transfer: %04x %04x %04x %04x\n",
+        ntohs(*(unsigned short *)(data+0)),
+        ntohs(*(unsigned short *)(data+2)),
+        ntohs(*(unsigned short *)(data+4)),
+        ntohs(*(unsigned short *)(data+6)));
     bytes = libusb_control_transfer(dev, 0x21, 9, 0x200, 0, data, 8, 1000);
 
     if (bytes < 0) {
@@ -103,7 +109,7 @@ int pfan_send(libusb_device_handle *dev_handle, int img_n,
     for (uint8_t i = 0; i < img_n; i++) {
         uint64_t effect = encode_effect(i, effects[i]);
 
-        ret = send(dev_handle, &effect);
+        ret = pfan_usb_send(dev_handle, &effect);
 
         if (ret < 0) {
             return ret;
@@ -114,7 +120,7 @@ int pfan_send(libusb_device_handle *dev_handle, int img_n,
         bytes += 8;
 
         for (uint8_t j = 0; j < 39; ++j) {
-            ret = send(dev_handle, &displays[i][j * 4]);
+            ret = pfan_usb_send(dev_handle, &displays[i][j * 4]);
 
             if (ret < 0) {
                 return ret;
