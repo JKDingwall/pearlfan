@@ -71,7 +71,7 @@ void pfan_draw_char(int xpos,
 
     for (int j = 0; j < PFAN_MAX_H; ++j)  {
         for (int i = 0; i < PFAN_CHAR_W; ++i) {
-            /* Because of little indian */
+            /* Because of little endian */
             if (pfan_font[c][j] & (0x01 << i))
                 pfan_draw_point(xpos + i, j, display);
         }
@@ -79,20 +79,20 @@ void pfan_draw_char(int xpos,
 }
 
 void pfan_draw_text(char *text,
-                    int lenght,
+                    int length,
                     int lspace,
                     unsigned short display[PFAN_MAX_W])
 {
     int i = 0;
 
-    if (lenght == 0 || lenght > PFAN_MAX_CHAR) {
+    if (length == 0 || length > PFAN_MAX_CHAR) {
         return;
     }
 
     pfan_draw_char(0, text[i], display);
 
     /* From 1 because of first led column is disabled when it is rotating */
-    for (i = 1; i < lenght; ++i) {
+    for (i = 1; i < length; ++i) {
         pfan_draw_char(i * (PFAN_CHAR_W + lspace), text[i], display);
     }
 }
